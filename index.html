@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang = "es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Inicio - MeteoTrack</title>
+        <link rel="stylesheet" href="/css/styles.css" />
+    </head>
+    <body>
+        <header>
+            <a href="/index.html" class="logo">MeteoTrack</a>
+        </header>
+
+        <nav aria-label="Principal">
+            <ul>
+                <li><a href="/index.html" class="activo">Inicio</a></li>
+                <li><a href="/busqueda.html">Búsqueda</a></li>
+                <li><a href="/lista-deseos.html">Favoritos</a></li>
+                <li><a href="/historial.html">Historial</a></li>
+                <li><a href="/contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section>
+                <h1>El clima de tu lugar, al alcance</h1>
+                <p>
+                    Buscá una localidad, mirá el pronóstico y guardá los sitios que sean de tu interés.
+                </p>
+                <div class="acciones-inicio">
+                    <a class="boton" href="/busqueda.html">Buscar una localidad</a>
+                    <button type="button" id="boton-ubicacion">Usar mi ubicación</button>
+                </div>
+                <p id="error-ubicacion"></p>
+            </section>
+        </main>
+
+        <footer>
+            <p>Weather data by Open-Meteo.com</p>
+        </footer>
+        
+        <script type="module" src="/js/ui/inicio.js"></script>
+    </body>
+</html>

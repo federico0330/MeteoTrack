@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Búsqueda - MeteoTrack</title>
+        <link rel="stylesheet" href="/css/styles.css" />
+    </head>
+    <body>
+        <header>
+            <a href="/index.html" class="logo">MeteoTrack</a>
+        </header>
+
+        <nav aria-label="Principal">
+            <ul>
+                <li><a href="/index.html">Inicio</a></li>
+                <li><a href="/busqueda.html" class="activo">Búsqueda</a></li>
+                <li><a href="/lista-deseos.html">Favoritos</a></li>
+                <li><a href="historial.html">Historial</a></li>
+                <li><a href="/contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section>
+                <h1>Buscar localidad</h1>
+                <form id="form-busqueda">
+                    <label>
+                        Nombre
+                        <input type="text" name="nombre" id="filtro-nombre" />
+                    </label>
+                    <label>
+                        Pais
+                        <input type="text" name="pais" id="filtro-pais" placeholder="AR, UY, BR..." />
+                    </label>
+                    <label>
+                        Poblacion mínima
+                        <input type="number" name="poblacion" id="filtro-poblacion" min="0" />
+                    </label>
+                    <button type="button" id="boton-buscar">Buscar</button>
+                </form>
+            </section>
+
+            <section>
+                <h2>Resultados</h2>
+                <div id="resultados">
+                    <p>Escribí un nombre y presioná Buscar.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Weather data by Open-Meteo</p>
+        </footer>
+
+        <script type="module" src="/js/ui/busqueda.js"></script>
+    </body>
+</html>
