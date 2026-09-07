@@ -278,3 +278,178 @@ footer {
     fill: #16324d;
     font-family: system-ui, sans-serif;
 }
+
+/* --- briefing de mañana --- */
+.briefing {
+    background: #ffffff;
+    border: 1px solid var(--borde, #d0d7de);
+    border-radius: var(--radio);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.briefing h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+}
+
+.briefing p {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.4;
+}
+
+/* Variante nocturna */
+.briefing-noche {
+    background : #1e3a5f;
+    border-color: #152a45;
+    color: #f0f4f8;
+}
+
+.briefing-noche h2 {
+    color: #f0f4f8;
+}
+
+.aviso-nocturno {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radio);
+    background: #1e3a5f;
+    color: #f0f4f8;
+    max-width: 36rem;
+}
+
+/* --- Favoritos (toggle en detalle + orden en lista) --- */
+.detalle-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.detalle-cabecera h1 {
+    margin: 0;
+    flex: 1 1 auto;
+}
+
+.boton-favorito {
+    flex: 0 0 auto;
+}
+
+.boton-favorito-activo {
+    background: #8b1e1e;
+    color: #fff;
+}
+
+.favorito-feedback {
+    margin: 0 0 0.75rem;
+}
+
+.favorito-feedback:empty {
+    display: none;
+}
+
+.mensaje-ok {
+    color: #0f5132;
+    background: #d1e7dd;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radio);
+}
+
+.mensaje-aviso {
+    color: #664d03;
+    background: #fff3cd;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radio);
+}
+
+.lista-favoritos-ordenada {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.favorito-card {
+    padding: 0.65rem 0.75rem;
+}
+
+.favorito-fila {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.favorito-orden {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 0 0 auto;
+}
+
+.favorito-orden button {
+    min-width: 2rem;
+    padding: 0.2rem 0.35rem;
+    line-height: 1.1;
+}
+
+.favorito-acceso {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.favorito-acceso:hover .favorito-nombre,
+.favorito-acceso:focus-visible .favorito-nombre {
+    text-decoration: underline;
+}
+
+.favorito-nombre {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.favorito-lugar {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.favorito-toggle {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.65rem;
+}
+
+.favorito-panel {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #d8dee4;
+}
+
+.favorito-editar {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.favorito-editar textarea {
+    width: 100%;
+    font: inherit;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #c5cdd6;
+    border-radius: var(--radio);
+    resize: vertical;
+}
+
+.favorito-quitar {
+    margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .favorito-editar {
+        grid-template-columns: 1fr 2fr auto;
+        align-items: end;
+    }
+}

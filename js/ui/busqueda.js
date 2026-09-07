@@ -63,7 +63,7 @@ function pintarPagina() {
         meta.textContent = `${lugar} · ${poblacionTexto} hab.`;
 
         const enlace = document.createElement("a");
-        enlace.href = `/detalle.html?id=${loc.id}`;
+        enlace.href = `detalle.html?id=${loc.id}`;
         enlace.textContent = "Ver detalle";
 
         articulo.append(titulo, meta, enlace);

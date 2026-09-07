@@ -5,6 +5,12 @@ import {
 import { textoClima } from "../domain/codigosWmo.js";
 import { crearBloqueMapa } from "../infrastructure/osmMapa.js";
 import { crearGraficoTemperaturas } from "./graficoTemperaturas.js";
+import { armarBriefingManana } from "../application/armarBriefManana.js";
+import {
+    agregarFavorito,
+    borrarFavorito,
+    esFavorito,
+} from "../application/gestionarFavoritos.js";
 
 const caja = document.querySelector("#detalle-contenido");
 const params = new URLSearchParams(window.location.search);
@@ -41,8 +47,61 @@ async function cargar() {
 function pintar(localidad, pronostico) {
     caja.innerHTML = "";
 
+    const cabecera = document.createElement("div");
+    cabecera.className = "detalle-cabecera";
+
     const titulo = document.createElement("h1");
     titulo.textContent = localidad.nombre;
+
+    const botonFav = document.createElement("button");
+    botonFav.type = "button";
+    botonFav.className = "boton-favorito";
+
+    const mensajeFav = document.createElement("p");
+    mensajeFav.className = "favorito-feedback";
+
+    function refrescarBotonFavorito() {
+        if (localidad.id == null) {
+            botonFav.disabled = true;
+            botonFav.textContent = "Favoritos no disponible (GPS)";
+            return;
+        }
+        botonFav.disabled = false;
+        if (esFavorito(localidad.id)) {
+            botonFav.textContent = "Quitar de favoritos";
+            botonFav.classList.add("boton-favorito-activo");
+        } else {
+            botonFav.textContent = "Agregar a favoritos";
+            botonFav.classList.remove("boton-favorito-activo");
+        }
+    }
+
+    refrescarBotonFavorito();
+
+    botonFav.addEventListener("click", function () {
+        mensajeFav.textContent = "";
+        mensajeFav.className = "favorito-feedback";
+        try {
+            if (localidad.id == null) {
+                throw new Error("Buscá la ciudad por nombre para poder guardarla.");
+            }
+            if (esFavorito(localidad.id)) {
+                borrarFavorito(localidad.id);
+                mensajeFav.classList.add("mensaje-ok");
+                mensajeFav.textContent = "Quitado de favoritos.";
+            } else {
+                agregarFavorito(localidad);
+                mensajeFav.classList.add("mensaje-ok");
+                mensajeFav.textContent = "Agregado a favoritos.";
+            }
+            refrescarBotonFavorito();
+        } catch (error) {
+            mensajeFav.classList.add("mensaje-error");
+            mensajeFav.textContent = error.message;
+        }
+    });
+
+    cabecera.append(titulo, botonFav);
 
     const meta = document.createElement("p");
     const lugar = localidad.provincia ? `${localidad.provincia}, ${localidad.pais}` : localidad.pais;
@@ -70,10 +129,10 @@ function pintar(localidad, pronostico) {
     const extras = document.createElement("p");
     extras.textContent = `Sensacion ${Math.round(pronostico.actual.sensacion)} °C · Humedad ${pronostico.actual.humedad}% · Viento ${Math.round(pronostico.actual.viento)} km/h`;
     ahora.append(h2Ahora, temp, desc, extras);
-    principal.append(mapa, ahora)
+    principal.append(mapa, ahora);
 
     const proximas = proximas24Horas(pronostico);
-    const seccionHoras = document.createElement("section"); 
+    const seccionHoras = document.createElement("section");
     const h2Horas = document.createElement("h2");
     h2Horas.textContent = "Próximas 24 horas";
     const listaHoras = document.createElement("div");
@@ -90,9 +149,30 @@ function pintar(localidad, pronostico) {
         g.textContent = `${Math.round(hora.temperatura)} °C`;
         const l = document.createElement("p");
         l.textContent = `${hora.lluvia ?? "-"}% lluvia`;
-        item.append(t,g,l);
+        item.append(t, g, l);
         listaHoras.appendChild(item);
     }
+
+    // --- Briefing de mañana ---
+    const briefingDatos = armarBriefingManana(pronostico);
+    let seccionBriefing = null;
+
+    if (briefingDatos) {
+        seccionBriefing = document.createElement("section");
+        //De día: .briefing | De noche: .briefing + .briefing-noche
+        seccionBriefing.className = briefingDatos.esDeNoche
+            ? "briefing briefing-noche"
+            : "briefing";
+
+        const h2Briefing = document.createElement("h2");
+        h2Briefing.textContent = "Briefing de mañana";
+
+        const pBriefing = document.createElement("p");
+        pBriefing.textContent = briefingDatos.frase;
+
+        seccionBriefing.append(h2Briefing, pBriefing);
+    }
+
     seccionHoras.append(h2Horas, grafico, listaHoras);
 
     const seccionDias = document.createElement("section");
@@ -109,12 +189,17 @@ function pintar(localidad, pronostico) {
         c.textContent = textoClima(dia.codigo);
         const mm = document.createElement("p");
         mm.textContent = `${Math.round(dia.max)}° / ${Math.round(dia.min)}°`;
-        item.append(f,c,mm);
+        item.append(f, c, mm);
         listaDias.appendChild(item);
     }
     seccionDias.append(h2Dias, listaDias);
 
-    caja.append(titulo, meta, principal, seccionHoras, seccionDias);
+    const piezas = [cabecera, mensajeFav, meta, principal];
+    if (seccionBriefing) {
+        piezas.push(seccionBriefing);
+    }
+    piezas.push(seccionHoras, seccionDias);
+    caja.append(...piezas);
 }
 
 function proximas24Horas(pronostico) {

@@ -118,19 +118,25 @@ No es push a las 21 h (haría falta servidor).
 
 ---
 
-## Fase 6 — Favoritos variante B + localStorage (NO hecho)
+## Fase 6 — Favoritos variante B + localStorage (hecho — UX rework)
 
-**Actual:** `lista-deseos.html` solo dice que no hay ítems. Cero `localStorage`.
+**UX:**
+- En **detalle**: botón arriba (junto al nombre) “Agregar a favoritos” /
+  “Quitar de favoritos”. Un clic; sin formulario de prioridad.
+- GPS (`id: null`): botón deshabilitado; no se guarda.
+- En **Favoritos**: filas **compactas** (nombre = acceso directo a
+  `detalle.html?id=`); ↑ ↓ para ordenar; panel **Editar** colapsado
+  (etiqueta/nota/quitar). Sin fetch de clima por ítem.
+- Persistencia: orden del array en `localStorage` = prioridad visual.
+- Clave: `id` GeoNames/Open-Meteo.
 
-**Final (consigna RF5):**
-
-- Adaptador `js/infrastructure/favoritosStorage.js` (get/set JSON).
-- Caso de uso: agregar (prioridad > 0, etiqueta, nota con tope), listar, borrar.
-- Validación **con JavaScript** (no solo HTML `required`).
-- Formulario en el detalle + confirmación en la página.
-- `js/ui/listaDeseos.js` + script en `lista-deseos.html`.
-- Clave: `id` de GeoNames; GPS (`id: null`) no se guarda como favorito
-  salvo que más adelante se decida un id sintético.
+| Archivo | Rol |
+|---|---|
+| `js/infrastructure/favoritosStorage.js` | get/set JSON |
+| `js/application/gestionarFavoritos.js` | agregar, quitar, listar, mover, actualizar |
+| `js/ui/detalle.js` | botón toggle junto al título |
+| `js/ui/listaDeseos.js` | filas compactas + link detalle + panel Editar |
+| `lista-deseos.html` | `#lista-favoritos` + script |
 
 ---
 
@@ -176,7 +182,8 @@ No es push a las 21 h (haría falta servidor).
 | Mapa | `osmMapa.js` |
 | Gráfico | `graficoTemperaturas.js` |
 | `?id=` vs GPS | `detalle.js` + `obtenerDetalle.js` |
-| localStorage / PWA | aún no |
+| Favoritos / localStorage | `gestionarFavoritos.js` + `listaDeseos.js` |
+| PWA | aún no |
 
 ## Fuera de alcance (no codear)
 
@@ -185,8 +192,6 @@ Push con la app cerrada, Nominatim, Leaflet, Chart.js, Google Maps,
 
 ## Orden para retomar (vos codeás)
 
-1. Fase 5 briefing (el dictado ya está en el chat del 2 sep).
-2. Fase 6 favoritos + localStorage.
-3. Fase 7 historial + Notification.
-4. Fase 8 PWA.
-5. Typo backticks en `httpClient.js` cuando pases por ahí.
+1. Fase 7 historial + Notification.
+2. Fase 8 PWA.
+3. Typo backticks en `httpClient.js` cuando pases por ahí.
