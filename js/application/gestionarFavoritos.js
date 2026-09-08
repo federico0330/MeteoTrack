@@ -1,7 +1,14 @@
+/**
+ * gestionarFavoritos — reglas de negocio de la lista de deseos.
+ * Clave = id de Open-Meteo. GPS (id null) no entra: sin nombre de ciudad
+ * real no me aporta guardar un pin suelto (el clima es el de la zona igual).
+ */
 import { leerFavoritos, guardarFavoritos } from "../infrastructure/favoritosStorage.js";
 
 const LARGO_MAX_NOTA = 200;
 const LARGO_MAX_ETIQUETA = 60;
+
+// ---------- lectura ----------
 
 export function listarFavoritos() {
     return leerFavoritos();
@@ -15,7 +22,9 @@ export function esFavorito(id) {
     return leerFavoritos().some((item) => item.id === numero);
 }
 
-/** Un clic desde el detalle: etiqueta = nombre, nota vacía, al final de la lista. */
+// ---------- alta / baja ----------
+
+/** Un clic desde el detalle: etiqueta = nombre, nota vacía, al final. */
 export function agregarFavorito(localidad) {
     if (!localidad || localidad.id == null) {
         throw new Error(
@@ -48,7 +57,9 @@ export function borrarFavorito(id) {
     guardarFavoritos(leerFavoritos().filter((item) => item.id !== numero));
 }
 
-/** direccion: -1 sube (más arriba en la lista), +1 baja */
+// ---------- orden (la prioridad visual = orden del array) ----------
+
+/** direccion: -1 sube, +1 baja */
 export function moverFavorito(id, direccion) {
     const lista = leerFavoritos();
     const numero = Number(id);
@@ -68,18 +79,24 @@ export function moverFavorito(id, direccion) {
     guardarFavoritos(lista);
 }
 
+// ---------- editar etiqueta / nota ----------
+
 export function actualizarFavorito(id, { etiqueta, nota }) {
     const etiquetaLimpia = String(etiqueta ?? "").trim();
     if (!etiquetaLimpia) {
         throw new Error("La etiqueta es obligatoria.");
     }
     if (etiquetaLimpia.length > LARGO_MAX_ETIQUETA) {
-        throw new Error(`La etiqueta no puede superar ${LARGO_MAX_ETIQUETA} caracteres.`);
+        throw new Error(
+            `La etiqueta no puede superar ${LARGO_MAX_ETIQUETA} caracteres.`
+        );
     }
 
     const notaLimpia = String(nota ?? "").trim();
     if (notaLimpia.length > LARGO_MAX_NOTA) {
-        throw new Error(`La nota no puede superar ${LARGO_MAX_NOTA} caracteres.`);
+        throw new Error(
+            `La nota no puede superar ${LARGO_MAX_NOTA} caracteres.`
+        );
     }
 
     const numero = Number(id);

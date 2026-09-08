@@ -1,6 +1,14 @@
+/**
+ * detalle.js — pantalla principal del clima.
+ * Orden de lectura que armé:
+ *   1) imports
+ *   2) helpers de formato / slice 24 h  (juntos, los uso al pintar)
+ *   3) arranque: leer URL → cargar datos
+ *   4) pintar: cabecera → mapa/ahora → briefing → 24 h → 7 días
+ */
 import {
     obtenerDetalle,
-    obtenerDetallePorCoordenadas
+    obtenerDetallePorCoordenadas,
 } from "../application/obtenerDetalle.js";
 import { textoClima } from "../domain/codigosWmo.js";
 import { crearBloqueMapa } from "../infrastructure/osmMapa.js";
@@ -11,6 +19,37 @@ import {
     borrarFavorito,
     esFavorito,
 } from "../application/gestionarFavoritos.js";
+import { registrarVisita } from "../application/gestionarHistorial.js";
+import { avisarLocal } from "../infrastructure/notificaciones.js";
+
+// ---------- helpers (los dejé arriba para no saltar al final del archivo) ----------
+
+function proximas24Horas(pronostico) {
+    const ahora = pronostico.actual.tiempo;
+    let indice = pronostico.horario.findIndex((h) => h.tiempo >= ahora);
+    if (indice < 0) {
+        indice = 0;
+    }
+    return pronostico.horario.slice(indice, indice + 24);
+}
+
+function formatearHora(iso) {
+    return new Date(iso).toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}
+
+function formatearFecha(isoFecha) {
+    // Mediodía fijo para no pelearme con husos al mostrar solo la fecha.
+    return new Date(`${isoFecha}T12:00:00`).toLocaleDateString("es-AR", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+    });
+}
+
+// ---------- arranque ----------
 
 const caja = document.querySelector("#detalle-contenido");
 const params = new URLSearchParams(window.location.search);
@@ -34,6 +73,9 @@ async function cargar() {
 
         const localidad = detalle.localidad;
         const pronostico = detalle.pronostico;
+
+        // Solo con id: GPS no deja rastro en historial.
+        registrarVisita(localidad);
         pintar(localidad, pronostico);
     } catch (error) {
         caja.innerHTML = "";
@@ -44,77 +86,85 @@ async function cargar() {
     }
 }
 
+// ---------- pintar (bloques en el orden visual de la página) ----------
+
 function pintar(localidad, pronostico) {
     caja.innerHTML = "";
 
+    const mensajeFav = document.createElement("p");
+    mensajeFav.className = "favorito-feedback";
+
+    // === 1) Cabecera: título + favorito (o aviso GPS) ===
     const cabecera = document.createElement("div");
     cabecera.className = "detalle-cabecera";
 
     const titulo = document.createElement("h1");
     titulo.textContent = localidad.nombre;
 
-    const botonFav = document.createElement("button");
-    botonFav.type = "button";
-    botonFav.className = "boton-favorito";
+    if (localidad.id == null) {
+        // No uso un botón deshabilitado amarillo: parece acción y no lo es.
+        const avisoGps = document.createElement("p");
+        avisoGps.className = "aviso-favorito-gps";
+        avisoGps.textContent =
+            "Vista por GPS: para guardar en favoritos, buscá la localidad por nombre.";
+        cabecera.append(titulo, avisoGps);
+    } else {
+        const botonFav = document.createElement("button");
+        botonFav.type = "button";
+        botonFav.className = "boton-favorito";
 
-    const mensajeFav = document.createElement("p");
-    mensajeFav.className = "favorito-feedback";
+        function refrescarBotonFavorito() {
+            if (esFavorito(localidad.id)) {
+                botonFav.textContent = "Quitar de favoritos";
+                botonFav.classList.add("boton-favorito-activo");
+            } else {
+                botonFav.textContent = "Agregar a favoritos";
+                botonFav.classList.remove("boton-favorito-activo");
+            }
+        }
 
-    function refrescarBotonFavorito() {
-        if (localidad.id == null) {
-            botonFav.disabled = true;
-            botonFav.textContent = "Favoritos no disponible (GPS)";
-            return;
-        }
-        botonFav.disabled = false;
-        if (esFavorito(localidad.id)) {
-            botonFav.textContent = "Quitar de favoritos";
-            botonFav.classList.add("boton-favorito-activo");
-        } else {
-            botonFav.textContent = "Agregar a favoritos";
-            botonFav.classList.remove("boton-favorito-activo");
-        }
+        refrescarBotonFavorito();
+
+        botonFav.addEventListener("click", function () {
+            mensajeFav.textContent = "";
+            mensajeFav.className = "favorito-feedback";
+            try {
+                if (esFavorito(localidad.id)) {
+                    borrarFavorito(localidad.id);
+                    mensajeFav.classList.add("mensaje-ok");
+                    mensajeFav.textContent = "Quitado de favoritos.";
+                } else {
+                    agregarFavorito(localidad);
+                    mensajeFav.classList.add("mensaje-ok");
+                    mensajeFav.textContent = "Agregado a favoritos.";
+                    void avisarLocal(
+                        "MeteoTrack",
+                        "Guardado en favoritos: " + localidad.nombre
+                    );
+                }
+                refrescarBotonFavorito();
+            } catch (error) {
+                mensajeFav.classList.add("mensaje-error");
+                mensajeFav.textContent = error.message;
+            }
+        });
+
+        cabecera.append(titulo, botonFav);
     }
 
-    refrescarBotonFavorito();
-
-    botonFav.addEventListener("click", function () {
-        mensajeFav.textContent = "";
-        mensajeFav.className = "favorito-feedback";
-        try {
-            if (localidad.id == null) {
-                throw new Error("Buscá la ciudad por nombre para poder guardarla.");
-            }
-            if (esFavorito(localidad.id)) {
-                borrarFavorito(localidad.id);
-                mensajeFav.classList.add("mensaje-ok");
-                mensajeFav.textContent = "Quitado de favoritos.";
-            } else {
-                agregarFavorito(localidad);
-                mensajeFav.classList.add("mensaje-ok");
-                mensajeFav.textContent = "Agregado a favoritos.";
-            }
-            refrescarBotonFavorito();
-        } catch (error) {
-            mensajeFav.classList.add("mensaje-error");
-            mensajeFav.textContent = error.message;
-        }
-    });
-
-    cabecera.append(titulo, botonFav);
-
     const meta = document.createElement("p");
-    const lugar = localidad.provincia ? `${localidad.provincia}, ${localidad.pais}` : localidad.pais;
-    meta.textContent = lugar;
+    meta.textContent = localidad.provincia
+        ? `${localidad.provincia}, ${localidad.pais}`
+        : localidad.pais;
 
+    // === 2) Mapa + clima actual (en desktop van lado a lado por CSS) ===
     const principal = document.createElement("section");
     principal.className = "detalle-principal";
 
-    const etiquetaMapa = localidad.nombre;
     const mapa = crearBloqueMapa(
         localidad.latitud,
         localidad.longitud,
-        etiquetaMapa
+        localidad.nombre
     );
 
     const ahora = document.createElement("section");
@@ -127,17 +177,42 @@ function pintar(localidad, pronostico) {
     const desc = document.createElement("p");
     desc.textContent = textoClima(pronostico.actual.codigo);
     const extras = document.createElement("p");
-    extras.textContent = `Sensacion ${Math.round(pronostico.actual.sensacion)} °C · Humedad ${pronostico.actual.humedad}% · Viento ${Math.round(pronostico.actual.viento)} km/h`;
+    extras.textContent =
+        `Sensacion ${Math.round(pronostico.actual.sensacion)} °C · ` +
+        `Humedad ${pronostico.actual.humedad}% · ` +
+        `Viento ${Math.round(pronostico.actual.viento)} km/h`;
     ahora.append(h2Ahora, temp, desc, extras);
     principal.append(mapa, ahora);
 
+    // === 3) Briefing de mañana ===
+    const briefingDatos = armarBriefingManana(pronostico);
+    let seccionBriefing = null;
+
+    if (briefingDatos) {
+        seccionBriefing = document.createElement("section");
+        seccionBriefing.className = briefingDatos.esDeNoche
+            ? "briefing briefing-noche"
+            : "briefing";
+
+        const h2Briefing = document.createElement("h2");
+        h2Briefing.textContent = "Briefing de mañana";
+        const pBriefing = document.createElement("p");
+        pBriefing.textContent = briefingDatos.frase;
+        seccionBriefing.append(h2Briefing, pBriefing);
+
+        // Solo si ya hay permiso; pedir al cargar lo niega Chrome en silencio.
+        if (Notification.permission === "granted") {
+            void avisarLocal("Briefing de mañana", briefingDatos.frase);
+        }
+    }
+
+    // === 4) Próximas 24 horas (gráfico + cards) ===
     const proximas = proximas24Horas(pronostico);
     const seccionHoras = document.createElement("section");
     const h2Horas = document.createElement("h2");
     h2Horas.textContent = "Próximas 24 horas";
     const listaHoras = document.createElement("div");
     listaHoras.className = "lista-horas";
-
     const grafico = crearGraficoTemperaturas(proximas);
 
     for (const hora of proximas) {
@@ -152,34 +227,15 @@ function pintar(localidad, pronostico) {
         item.append(t, g, l);
         listaHoras.appendChild(item);
     }
-
-    // --- Briefing de mañana ---
-    const briefingDatos = armarBriefingManana(pronostico);
-    let seccionBriefing = null;
-
-    if (briefingDatos) {
-        seccionBriefing = document.createElement("section");
-        //De día: .briefing | De noche: .briefing + .briefing-noche
-        seccionBriefing.className = briefingDatos.esDeNoche
-            ? "briefing briefing-noche"
-            : "briefing";
-
-        const h2Briefing = document.createElement("h2");
-        h2Briefing.textContent = "Briefing de mañana";
-
-        const pBriefing = document.createElement("p");
-        pBriefing.textContent = briefingDatos.frase;
-
-        seccionBriefing.append(h2Briefing, pBriefing);
-    }
-
     seccionHoras.append(h2Horas, grafico, listaHoras);
 
+    // === 5) Próximos 7 días ===
     const seccionDias = document.createElement("section");
     const h2Dias = document.createElement("h2");
     h2Dias.textContent = "Próximos 7 días";
     const listaDias = document.createElement("div");
     listaDias.className = "lista-cards";
+
     for (const dia of pronostico.diario) {
         const item = document.createElement("article");
         item.className = "card";
@@ -194,34 +250,11 @@ function pintar(localidad, pronostico) {
     }
     seccionDias.append(h2Dias, listaDias);
 
+    // === montaje final (mismo orden que se lee en pantalla) ===
     const piezas = [cabecera, mensajeFav, meta, principal];
     if (seccionBriefing) {
         piezas.push(seccionBriefing);
     }
     piezas.push(seccionHoras, seccionDias);
     caja.append(...piezas);
-}
-
-function proximas24Horas(pronostico) {
-    const ahora = pronostico.actual.tiempo;
-    let indice = pronostico.horario.findIndex((h) => h.tiempo >= ahora);
-    if (indice < 0) {
-        indice = 0;
-    }
-    return pronostico.horario.slice(indice, indice + 24);
-}
-
-function formatearHora(iso) {
-    return new Date(iso).toLocaleTimeString("es-AR", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
-}
-
-function formatearFecha(isoFecha) {
-    return new Date(`${isoFecha}T12:00:00`).toLocaleDateString("es-AR", {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-    });
 }

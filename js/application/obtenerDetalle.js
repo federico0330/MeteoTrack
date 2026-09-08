@@ -1,5 +1,11 @@
+/**
+ * obtenerDetalle — junto localidad + pronóstico para la pantalla de detalle.
+ * Dos entradas: por id (búsqueda) o por coordenadas (GPS).
+ */
 import { obtenerPorId } from "../infrastructure/geocodingApi.js";
 import { obtenerPronostico } from "../infrastructure/forecastApi.js";
+
+// ---------- por id (tiene nombre de ciudad real) ----------
 
 export async function obtenerDetalle(id) {
     const numero = Number(id);
@@ -13,8 +19,10 @@ export async function obtenerDetalle(id) {
         longitud: localidad.longitud,
     });
 
-    return {localidad, pronostico};
+    return { localidad, pronostico };
 }
+
+// ---------- por GPS (sin reverse geocoding → nombre genérico) ----------
 
 export async function obtenerDetallePorCoordenadas(latitud, longitud) {
     const lat = Number(latitud);
@@ -24,6 +32,7 @@ export async function obtenerDetallePorCoordenadas(latitud, longitud) {
         throw new Error("Las coordenadas no son válidas.");
     }
 
+    // Localidad sintética: Open-Meteo no me dice “Berazategui” al revés.
     const localidad = {
         id: null,
         nombre: "Tu ubicación",
@@ -32,16 +41,13 @@ export async function obtenerDetallePorCoordenadas(latitud, longitud) {
         pais: "",
         codigoPais: "",
         provincia: "",
-        poblacion: 0
+        poblacion: 0,
     };
 
     const pronostico = await obtenerPronostico({
         latitud: lat,
-        longitud: lon
+        longitud: lon,
     });
 
-    return {
-        localidad: localidad,
-        pronostico: pronostico
-    };
+    return { localidad, pronostico };
 }

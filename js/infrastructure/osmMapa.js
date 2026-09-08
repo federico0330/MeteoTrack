@@ -1,4 +1,12 @@
+/**
+ * osmMapa — mapa con iframe de OpenStreetMap (sin Leaflet ni token).
+ * Armo la URL del embed, el link “abrir grande” y el bloque DOM listo para colgar.
+ */
+
+// Qué tan “zoomeado” se ve el bbox alrededor del pin.
 const DELTA = 0.02;
+
+// ---------- URLs ----------
 
 export function armarUrlEmbed(latitud, longitud) {
     const minLongitud = longitud - DELTA;
@@ -6,18 +14,35 @@ export function armarUrlEmbed(latitud, longitud) {
     const maxLongitud = longitud + DELTA;
     const maxLatitud = latitud + DELTA;
 
-    const bbox = minLongitud + "," + minLatitud + "," + maxLongitud + "," + maxLatitud;
-
+    const bbox =
+        minLongitud + "," + minLatitud + "," + maxLongitud + "," + maxLatitud;
     const marcador = latitud + "," + longitud;
 
-    const url = "https://www.openstreetmap.org/export/embed.html" + "?bbox=" + encodeURIComponent(bbox) + "&layer=mapnik" + "&marker=" + encodeURIComponent(marcador);
-
-    return url;
+    return (
+        "https://www.openstreetmap.org/export/embed.html" +
+        "?bbox=" +
+        encodeURIComponent(bbox) +
+        "&layer=mapnik" +
+        "&marker=" +
+        encodeURIComponent(marcador)
+    );
 }
 
 export function armarUrlMapaGrande(latitud, longitud) {
-    return ("https://www.openstreetmap.org/" + "?mlat=" + encodeURIComponent(latitud) + "&mlon=" + encodeURIComponent(longitud) + "#map=14/" + latitud + "/" + longitud);
+    return (
+        "https://www.openstreetmap.org/" +
+        "?mlat=" +
+        encodeURIComponent(latitud) +
+        "&mlon=" +
+        encodeURIComponent(longitud) +
+        "#map=14/" +
+        latitud +
+        "/" +
+        longitud
+    );
 }
+
+// ---------- DOM ----------
 
 export function crearBloqueMapa(latitud, longitud, etiqueta) {
     const figura = document.createElement("figure");
@@ -35,9 +60,8 @@ export function crearBloqueMapa(latitud, longitud, etiqueta) {
 
     const enlace = document.createElement("a");
     enlace.href = armarUrlMapaGrande(latitud, longitud);
-    //Abre otra pestaña y no le da a OSM control sobre la mía.
     enlace.target = "_blank";
-    enlace.rel = "noopener noreferrer";
+    enlace.rel = "noopener noreferrer"; // otra pestaña, sin control sobre la mía
     enlace.textContent = "Abrir en OpenStreetMap";
 
     const atribucion = document.createElement("p");
@@ -46,5 +70,4 @@ export function crearBloqueMapa(latitud, longitud, etiqueta) {
 
     figura.append(titulo, iframe, enlace, atribucion);
     return figura;
-
 }

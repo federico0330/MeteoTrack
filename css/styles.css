@@ -1,3 +1,8 @@
+/**
+ * styles.css — estilos de MeteoTrack (mobile-first).
+ * Tokens arriba; componentes; al final los @media donde
+ * reacomodo home/form/detalle/nav/horas al agrandar (RF8).
+ */
 *,
 *::before,
 *::after {
@@ -29,13 +34,25 @@ body {
 header {
     background: var(--color-cielo);
     padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--color-texto-inverso);
     text-decoration: none;
     font-weight: 700;
     font-size: 1.25rem;
+}
+
+.logo img {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.35rem;
+    display: block;
 }
 
 nav {
@@ -116,6 +133,11 @@ footer {
     color: var(--color-texto-inverso);
     padding: 1rem;
     font-size: 0.85rem;
+}
+
+footer p {
+    width: min(100%, var(--max));
+    margin: 0 auto;
 }
 
 .lista-cards {
@@ -212,6 +234,32 @@ footer {
         grid-column: 1 / -1;
         justify-self: start;
     }
+
+    header {
+        padding-inline: max(1rem, calc((100% - var(--max)) / 2));
+    }
+
+    nav ul {
+        width: min(100% - 2rem, var(--max));
+        margin-inline: auto;
+        justify-content: center;
+        gap: 0.5rem;
+        overflow-x: visible;
+    }
+
+    .lista-horas {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+        overflow: visible;
+    }
+
+    .lista-horas .card {
+        min-width: 0;
+    }
+
+    footer {
+        padding-inline: max(1rem, calc((100% - var(--max)) / 2));
+    }
 }
 
 .mapa-localidad {
@@ -257,6 +305,12 @@ footer {
 
     .mapa-localidad iframe {
         height: 280px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .mapa-localidad iframe {
+        height: 320px;
     }
 }
 
@@ -340,6 +394,16 @@ footer {
 .boton-favorito-activo {
     background: #8b1e1e;
     color: #fff;
+}
+
+/* Aviso en detalle GPS: texto secundario, no se confunde con un botón. */
+.aviso-favorito-gps {
+    margin: 0;
+    flex: 1 1 12rem;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    color: #5a6570;
+    font-weight: 500;
 }
 
 .favorito-feedback {

@@ -1,7 +1,19 @@
+/**
+ * graficoTemperaturas.js — SVG a mano (sin Chart.js).
+ * Orden: helpers → escalas → dibujo de la polyline → etiquetas.
+ */
+
 const NS_SVG = "http://www.w3.org/2000/svg";
 
 function crearNodoSvg(nombreDeEtiqueta) {
     return document.createElementNS(NS_SVG, nombreDeEtiqueta);
+}
+
+function formatearHoraCorta(iso) {
+    return new Date(iso).toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 }
 
 export function crearGraficoTemperaturas(horas) {
@@ -15,19 +27,19 @@ export function crearGraficoTemperaturas(horas) {
         return envoltorio;
     }
 
+    // --- tamaño del lienzo ---
     const ancho = 320;
     const alto = 160;
     const margenIzquierdo = 40;
     const margenDerecho = 12;
     const margenArriba = 16;
     const margenAbajo = 28;
-
     const anchoUtil = ancho - margenIzquierdo - margenDerecho;
     const altoUtil = alto - margenArriba - margenAbajo;
 
+    // --- min / max de temperatura (para escalar Y) ---
     let temperaturaMinima = horas[0].temperatura;
     let temperaturaMaxima = horas[0].temperatura;
-
     for (let i = 0; i < horas.length; i++) {
         const t = horas[i].temperatura;
         if (t < temperaturaMinima) {
@@ -37,12 +49,12 @@ export function crearGraficoTemperaturas(horas) {
             temperaturaMaxima = t;
         }
     }
-
     let rango = temperaturaMaxima - temperaturaMinima;
     if (rango === 0) {
         rango = 1;
     }
 
+    // --- svg raíz ---
     const svg = crearNodoSvg("svg");
     svg.setAttribute("viewBox", "0 0 " + ancho + " " + alto);
     svg.setAttribute("role", "img");
@@ -55,6 +67,7 @@ export function crearGraficoTemperaturas(horas) {
     tituloAccesible.textContent = "Temperatura próximas 24 horas.";
     svg.appendChild(tituloAccesible);
 
+    // --- etiquetas de escala ---
     const etiquetaMax = crearNodoSvg("text");
     etiquetaMax.setAttribute("x", "4");
     etiquetaMax.setAttribute("y", String(margenArriba + 4));
@@ -68,16 +81,15 @@ export function crearGraficoTemperaturas(horas) {
     etiquetaMin.setAttribute("class", "grafico-etiqueta");
     etiquetaMin.textContent = Math.round(temperaturaMinima) + "°";
     svg.appendChild(etiquetaMin);
-    
+
+    // --- puntos de la polyline ---
     let puntos = "";
     const ultimoIndice = horas.length - 1;
-
     for (let i = 0; i < horas.length; i++) {
         const t = horas[i].temperatura;
         const x = margenIzquierdo + (i / ultimoIndice) * anchoUtil;
         const normalizado = (t - temperaturaMinima) / rango;
         const y = margenArriba + (1 - normalizado) * altoUtil;
-
         if (i > 0) {
             puntos = puntos + " ";
         }
@@ -92,6 +104,7 @@ export function crearGraficoTemperaturas(horas) {
     linea.setAttribute("stroke-linejoin", "round");
     svg.appendChild(linea);
 
+    // --- horas inicio / fin ---
     const etiquetaInicio = crearNodoSvg("text");
     etiquetaInicio.setAttribute("x", String(margenIzquierdo));
     etiquetaInicio.setAttribute("y", String(alto - 8));
@@ -108,12 +121,4 @@ export function crearGraficoTemperaturas(horas) {
 
     envoltorio.appendChild(svg);
     return envoltorio;
-}
-
-function formatearHoraCorta(iso) {
-    const fecha = new Date(iso);
-    return fecha.toLocaleTimeString("es-AR", {
-        hour: "2-digit",
-        minute: "2-digit"
-    });
 }

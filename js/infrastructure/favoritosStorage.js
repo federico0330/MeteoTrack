@@ -1,7 +1,12 @@
-const Clave = "meteotrack.favoritos";
+/**
+ * favoritosStorage — caja fuerte de favoritos en localStorage.
+ * Solo leo/escribo JSON. Las reglas (agregar, ordenar) viven en application.
+ */
+
+const CLAVE = "meteotrack.favoritos";
 
 export function leerFavoritos() {
-    const crudo = localStorage.getItem(Clave);
+    const crudo = localStorage.getItem(CLAVE);
     if (!crudo) {
         return [];
     }
@@ -13,11 +18,11 @@ export function leerFavoritos() {
         }
         return datos;
     } catch {
-        // JSON inválido (alguien tocó DevTools, etc.)
+        // Si alguien rompió el JSON a mano en DevTools, prefiero lista vacía.
         return [];
     }
 }
 
 export function guardarFavoritos(lista) {
-    localStorage.setItem(Clave, JSON.stringify(lista));
+    localStorage.setItem(CLAVE, JSON.stringify(lista));
 }

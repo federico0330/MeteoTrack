@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Historial — MeteoTrack</title>
     <link rel="stylesheet" href="css/styles.css" />
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0b1f33" />
+    <link rel="icon" href="icons/icon-192.png" type="image/png" />
   </head>
   <body>
     <header>
-      <a href="index.html" class="logo">MeteoTrack</a>
+      <a href="index.html" class="logo">
+        <img src="icons/icon-192.png" alt="" width="32" height="32" />
+        MeteoTrack
+      </a>
     </header>
 
     <nav aria-label="Principal">
@@ -24,12 +31,16 @@
     <main>
       <section>
         <h1>Historial</h1>
-        <p>Acá aparecerán aquellas localidades a las que hayas accedido a su detalle.</p>
+        <p>Localidades cuyo detalle ya abriste. Tocá el nombre para volver a ver el clima</p>
+        <div id="lista-historial"></div>
       </section>
     </main>
 
     <footer>
       <p>Weather data by Open-Meteo.com</p>
     </footer>
+
+    <script type="module" src="js/ui/historial.js"></script>
+    <script src="js/pwa-init.js"></script>
   </body>
 </html>

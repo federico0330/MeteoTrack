@@ -1,12 +1,12 @@
 import { crearBloqueMapa } from "../infrastructure/osmMapa.js";
 
-const CATEDRAL_LATITUD = -34.9215;
-const CATEDRAL_LONGITUD = -57.9536;
+// Punto de referencia que pedí para Contacto: sede central de la UNAJ
+// (Av. Calchaquí 6200, Florencio Varela). Coords según Wikipedia/Wikidata.
+const UNAJ_LATITUD = -34.7751535;
+const UNAJ_LONGITUD = -58.2678955;
+const UNAJ_ETIQUETA = "Universidad Nacional Arturo Jauretche";
 
+// Acá solo armo el mapa y lo cuelgo en el hueco del HTML.
 const hueco = document.querySelector("#mapa-contacto");
-const mapa = crearBloqueMapa(
-    CATEDRAL_LATITUD,
-    CATEDRAL_LONGITUD,
-    "Catedral de La Plata"
-);
+const mapa = crearBloqueMapa(UNAJ_LATITUD, UNAJ_LONGITUD, UNAJ_ETIQUETA);
 hueco.appendChild(mapa);

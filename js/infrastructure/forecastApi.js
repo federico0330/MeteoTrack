@@ -1,23 +1,13 @@
+/**
+ * forecastApi — pedí el pronóstico a Open-Meteo Forecast.
+ * Armo un objeto con .actual, .horario y .diario para que el resto
+ * de la app no dependa de los nombres raros de la API.
+ */
 import { getJson } from "./httpClient.js";
 
 const BASE = "https://api.open-meteo.com/v1/forecast";
 
-export async function obtenerPronostico({latitud, longitud}) {
-    const params = new URLSearchParams({
-        latitude: String(latitud),
-        longitude: String(longitud),
-        current:
-        "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,is_day",
-        hourly: "temperature_2m,precipitation_probability,weather_code",
-        daily:
-        "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum",
-        forecast_days: "7",
-        timezone: "auto",
-    });
-
-    const data = await getJson(`${BASE}?${params.toString()}`);
-    return mapearPronostico(data);
-}
+// ---------- mapeo ----------
 
 function mapearPronostico(data) {
     return {
@@ -29,6 +19,7 @@ function mapearPronostico(data) {
             codigo: data.current.weather_code,
             viento: data.current.wind_speed_10m,
         },
+        // Las series horarias vienen en arrays paralelos: mismo índice = misma hora.
         horario: data.hourly.time.map((tiempo, i) => ({
             tiempo,
             temperatura: data.hourly.temperature_2m[i],
@@ -43,4 +34,23 @@ function mapearPronostico(data) {
             precipitacion: data.daily.precipitation_sum[i],
         })),
     };
+}
+
+// ---------- API pública ----------
+
+export async function obtenerPronostico({ latitud, longitud }) {
+    const params = new URLSearchParams({
+        latitude: String(latitud),
+        longitude: String(longitud),
+        current:
+            "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,is_day",
+        hourly: "temperature_2m,precipitation_probability,weather_code",
+        daily:
+            "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum",
+        forecast_days: "7",
+        timezone: "auto",
+    });
+
+    const data = await getJson(`${BASE}?${params.toString()}`);
+    return mapearPronostico(data);
 }

@@ -1,3 +1,8 @@
+/**
+ * codigosWmo — tabla WMO → texto en español.
+ * Lo dejé en domain porque es puro: no hay fetch ni DOM.
+ */
+
 const TEXTOS = {
     0: "Despejado",
     1: "Mayormente despejado",
@@ -23,7 +28,6 @@ const TEXTOS = {
 };
 
 export function textoClima(codigo) {
+    // Si el código no está en mi tabla, muestro el número y listo.
     return TEXTOS[codigo] ?? `Código ${codigo}`;
 }
-
-//El ?? es para que si el codigo no está en la tabla, muestre el número y no algo raro.

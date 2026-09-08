@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contacto — MeteoTrack</title>
     <link rel="stylesheet" href="css/styles.css" />
+
+    <link rel="manifest" href="manifest.json"/>
+    <meta name="theme-color" content="#0b1f33">
+    <link rel="icon" href="icons/icon-192.png" type="image/png" />
   </head>
   <body>
     <header>
-      <a href="index.html" class="logo">MeteoTrack</a>
+      <a href="index.html" class="logo">
+        <img src="icons/icon-192.png" alt="" width="32" height="32" />
+        MeteoTrack
+      </a>
     </header>
 
     <nav aria-label="Principal">
@@ -28,7 +35,10 @@
         <p>
           <a href="mailto:estudio@meteotrack.local">estudio@meteotrack.local</a>
         </p>
-        <p>Estudio en La Plata. Oficina de referencia: Catedral de La Plata</p>
+        <p>
+          Casa de estudios: Universidad Nacional Arturo Jauretche
+          (Av. Calchaquí 6200, Florencio Varela).
+        </p>
         <div id="mapa-contacto"></div>
       </section>
     </main>
@@ -38,5 +48,6 @@
     </footer>
 
     <script type="module" src="js/ui/contacto.js"></script>
+    <script src="js/pwa-init.js"></script>
   </body>
 </html>

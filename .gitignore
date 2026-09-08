@@ -3,3 +3,7 @@ Thumbs.db
 *.log
 .vscode/
 .idea/
+
+# Notas de trabajo / estudio (no forman parte de la entrega)
+HOJA-DE-RUTA.md
+ESTADO-Y-PLAN.md
