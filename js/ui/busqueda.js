@@ -1,9 +1,6 @@
-/**
- * busqueda.js — form de 3 filtros, cards y paginación de 10.
- */
+// Búsqueda: tres filtros y resultados de a 10.
 import { buscarLocalidades } from "../application/buscarLocalidades.js";
 
-// ---------- DOM + estado de paginación ----------
 const inputNombre = document.querySelector("#filtro-nombre");
 const inputPais = document.querySelector("#filtro-pais");
 const inputPoblacion = document.querySelector("#filtro-poblacion");
@@ -18,7 +15,6 @@ boton.addEventListener("click", () => {
     void buscar();
 });
 
-// ---------- buscar ----------
 async function buscar() {
     cajaResultados.textContent = "Buscando...";
 
@@ -39,7 +35,6 @@ async function buscar() {
     }
 }
 
-// ---------- pintar una página de resultados ----------
 function pintarPagina() {
     cajaResultados.innerHTML = "";
 
@@ -83,7 +78,6 @@ function pintarPagina() {
     pintarPaginacion();
 }
 
-// ---------- barra Anterior / Siguiente (junto a pintarPagina) ----------
 function pintarPaginacion() {
     const totalPaginas = Math.ceil(resultadosActuales.length / TAMANIO_PAGINA);
     if (totalPaginas <= 1) {

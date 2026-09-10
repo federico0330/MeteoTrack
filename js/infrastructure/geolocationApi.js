@@ -1,7 +1,4 @@
-/**
- * geolocationApi — envolví getCurrentPosition en una Promise.
- * Así desde la UI puedo usar async/await como con el fetch.
- */
+// GPS: getCurrentPosition envuelto en Promise para poder usar await.
 
 export function obtenerPosicionActual() {
     if (!navigator.geolocation) {
@@ -34,7 +31,6 @@ export function obtenerPosicionActual() {
             reject(new Error("Se agotó el tiempo esperando la ubicación."));
         }
 
-        // Para clima de ciudad no necesito precisión milimétrica: más rápido así.
         const opciones = {
             enableHighAccuracy: false,
             timeout: 10000,

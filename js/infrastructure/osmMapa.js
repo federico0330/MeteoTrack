@@ -1,12 +1,5 @@
-/**
- * osmMapa — mapa con iframe de OpenStreetMap (sin Leaflet ni token).
- * Armo la URL del embed, el link “abrir grande” y el bloque DOM listo para colgar.
- */
-
-// Qué tan “zoomeado” se ve el bbox alrededor del pin.
+// Mapa con iframe de OpenStreetMap. El bbox es un delta fijo alrededor del pin.
 const DELTA = 0.02;
-
-// ---------- URLs ----------
 
 export function armarUrlEmbed(latitud, longitud) {
     const minLongitud = longitud - DELTA;
@@ -42,8 +35,6 @@ export function armarUrlMapaGrande(latitud, longitud) {
     );
 }
 
-// ---------- DOM ----------
-
 export function crearBloqueMapa(latitud, longitud, etiqueta) {
     const figura = document.createElement("figure");
     figura.className = "mapa-localidad";
@@ -61,7 +52,7 @@ export function crearBloqueMapa(latitud, longitud, etiqueta) {
     const enlace = document.createElement("a");
     enlace.href = armarUrlMapaGrande(latitud, longitud);
     enlace.target = "_blank";
-    enlace.rel = "noopener noreferrer"; // otra pestaña, sin control sobre la mía
+    enlace.rel = "noopener noreferrer";
     enlace.textContent = "Abrir en OpenStreetMap";
 
     const atribucion = document.createElement("p");

@@ -1,8 +1,4 @@
-/**
- * styles.css — estilos de MeteoTrack (mobile-first).
- * Tokens arriba; componentes; al final los @media donde
- * reacomodo home/form/detalle/nav/horas al agrandar (RF8).
- */
+/* Estilos mobile-first. Los @media del final acomodan home, form, detalle y nav. */
 *,
 *::before,
 *::after {
@@ -333,7 +329,7 @@ footer p {
     font-family: system-ui, sans-serif;
 }
 
-/* --- briefing de mañana --- */
+/* briefing */
 .briefing {
     background: #ffffff;
     border: 1px solid var(--borde, #d0d7de);
@@ -373,7 +369,7 @@ footer p {
     max-width: 36rem;
 }
 
-/* --- Favoritos (toggle en detalle + orden en lista) --- */
+/* favoritos */
 .detalle-cabecera {
     display: flex;
     flex-wrap: wrap;
@@ -396,7 +392,7 @@ footer p {
     color: #fff;
 }
 
-/* Aviso en detalle GPS: texto secundario, no se confunde con un botón. */
+/* aviso GPS (no parece un botón) */
 .aviso-favorito-gps {
     margin: 0;
     flex: 1 1 12rem;

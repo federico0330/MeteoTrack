@@ -1,13 +1,7 @@
-/**
- * forecastApi — pedí el pronóstico a Open-Meteo Forecast.
- * Armo un objeto con .actual, .horario y .diario para que el resto
- * de la app no dependa de los nombres raros de la API.
- */
+// Cliente de Open-Meteo Forecast. Devuelve actual / horario / diario con nombres nuestros.
 import { getJson } from "./httpClient.js";
 
 const BASE = "https://api.open-meteo.com/v1/forecast";
-
-// ---------- mapeo ----------
 
 function mapearPronostico(data) {
     return {
@@ -19,7 +13,7 @@ function mapearPronostico(data) {
             codigo: data.current.weather_code,
             viento: data.current.wind_speed_10m,
         },
-        // Las series horarias vienen en arrays paralelos: mismo índice = misma hora.
+        // Open-Meteo manda arrays paralelos: el mismo índice es la misma hora.
         horario: data.hourly.time.map((tiempo, i) => ({
             tiempo,
             temperatura: data.hourly.temperature_2m[i],
@@ -35,8 +29,6 @@ function mapearPronostico(data) {
         })),
     };
 }
-
-// ---------- API pública ----------
 
 export async function obtenerPronostico({ latitud, longitud }) {
     const params = new URLSearchParams({

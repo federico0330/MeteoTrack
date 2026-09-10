@@ -1,7 +1,4 @@
-/**
- * codigosWmo — tabla WMO → texto en español.
- * Lo dejé en domain porque es puro: no hay fetch ni DOM.
- */
+// Códigos WMO de Open-Meteo a texto.
 
 const TEXTOS = {
     0: "Despejado",
@@ -28,6 +25,5 @@ const TEXTOS = {
 };
 
 export function textoClima(codigo) {
-    // Si el código no está en mi tabla, muestro el número y listo.
     return TEXTOS[codigo] ?? `Código ${codigo}`;
 }

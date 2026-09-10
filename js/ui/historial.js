@@ -1,6 +1,4 @@
-/**
- * historial.js — listo lo que registré al entrar a un detalle con id.
- */
+// Historial de detalles abiertos con id.
 import { listarHistorial } from "../application/gestionarHistorial.js";
 
 const caja = document.querySelector("#lista-historial");

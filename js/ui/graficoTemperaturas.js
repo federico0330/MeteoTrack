@@ -1,10 +1,8 @@
-/**
- * graficoTemperaturas.js — SVG a mano (sin Chart.js).
- * Orden: helpers → escalas → dibujo de la polyline → etiquetas.
- */
+// Gráfico de las 24 h en SVG, sin librería.
 
 const NS_SVG = "http://www.w3.org/2000/svg";
 
+// createElementNS: el SVG no se arma con createElement normal.
 function crearNodoSvg(nombreDeEtiqueta) {
     return document.createElementNS(NS_SVG, nombreDeEtiqueta);
 }
@@ -27,7 +25,6 @@ export function crearGraficoTemperaturas(horas) {
         return envoltorio;
     }
 
-    // --- tamaño del lienzo ---
     const ancho = 320;
     const alto = 160;
     const margenIzquierdo = 40;
@@ -37,7 +34,6 @@ export function crearGraficoTemperaturas(horas) {
     const anchoUtil = ancho - margenIzquierdo - margenDerecho;
     const altoUtil = alto - margenArriba - margenAbajo;
 
-    // --- min / max de temperatura (para escalar Y) ---
     let temperaturaMinima = horas[0].temperatura;
     let temperaturaMaxima = horas[0].temperatura;
     for (let i = 0; i < horas.length; i++) {
@@ -54,7 +50,6 @@ export function crearGraficoTemperaturas(horas) {
         rango = 1;
     }
 
-    // --- svg raíz ---
     const svg = crearNodoSvg("svg");
     svg.setAttribute("viewBox", "0 0 " + ancho + " " + alto);
     svg.setAttribute("role", "img");
@@ -67,7 +62,6 @@ export function crearGraficoTemperaturas(horas) {
     tituloAccesible.textContent = "Temperatura próximas 24 horas.";
     svg.appendChild(tituloAccesible);
 
-    // --- etiquetas de escala ---
     const etiquetaMax = crearNodoSvg("text");
     etiquetaMax.setAttribute("x", "4");
     etiquetaMax.setAttribute("y", String(margenArriba + 4));
@@ -82,7 +76,6 @@ export function crearGraficoTemperaturas(horas) {
     etiquetaMin.textContent = Math.round(temperaturaMinima) + "°";
     svg.appendChild(etiquetaMin);
 
-    // --- puntos de la polyline ---
     let puntos = "";
     const ultimoIndice = horas.length - 1;
     for (let i = 0; i < horas.length; i++) {
@@ -104,7 +97,6 @@ export function crearGraficoTemperaturas(horas) {
     linea.setAttribute("stroke-linejoin", "round");
     svg.appendChild(linea);
 
-    // --- horas inicio / fin ---
     const etiquetaInicio = crearNodoSvg("text");
     etiquetaInicio.setAttribute("x", String(margenIzquierdo));
     etiquetaInicio.setAttribute("y", String(alto - 8));

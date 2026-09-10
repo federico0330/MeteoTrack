@@ -1,7 +1,4 @@
-/**
- * favoritosStorage — caja fuerte de favoritos en localStorage.
- * Solo leo/escribo JSON. Las reglas (agregar, ordenar) viven en application.
- */
+// Favoritos en localStorage. Acá solo JSON; las reglas están en application.
 
 const CLAVE = "meteotrack.favoritos";
 
@@ -18,7 +15,6 @@ export function leerFavoritos() {
         }
         return datos;
     } catch {
-        // Si alguien rompió el JSON a mano en DevTools, prefiero lista vacía.
         return [];
     }
 }

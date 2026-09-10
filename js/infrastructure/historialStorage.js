@@ -1,7 +1,4 @@
-/**
- * historialStorage — mismo patrón que favoritos, otra clave.
- * Persistencia pura; el “unshift / tope 30” está en gestionarHistorial.
- */
+// Historial en localStorage. Misma idea que favoritos, otra clave.
 
 const CLAVE = "meteotrack.historial";
 

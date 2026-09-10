@@ -3,6 +3,9 @@ Thumbs.db
 *.log
 .vscode/
 .idea/
+.cursor/
+.env
+.env.*
 
 # Notas de trabajo / estudio (no forman parte de la entrega)
 HOJA-DE-RUTA.md

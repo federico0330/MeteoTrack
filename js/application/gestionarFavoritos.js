@@ -1,14 +1,8 @@
-/**
- * gestionarFavoritos — reglas de negocio de la lista de deseos.
- * Clave = id de Open-Meteo. GPS (id null) no entra: sin nombre de ciudad
- * real no me aporta guardar un pin suelto (el clima es el de la zona igual).
- */
+// Reglas de favoritos. Solo entra una localidad con id; el GPS no.
 import { leerFavoritos, guardarFavoritos } from "../infrastructure/favoritosStorage.js";
 
 const LARGO_MAX_NOTA = 200;
 const LARGO_MAX_ETIQUETA = 60;
-
-// ---------- lectura ----------
 
 export function listarFavoritos() {
     return leerFavoritos();
@@ -22,9 +16,6 @@ export function esFavorito(id) {
     return leerFavoritos().some((item) => item.id === numero);
 }
 
-// ---------- alta / baja ----------
-
-/** Un clic desde el detalle: etiqueta = nombre, nota vacía, al final. */
 export function agregarFavorito(localidad) {
     if (!localidad || localidad.id == null) {
         throw new Error(
@@ -57,9 +48,7 @@ export function borrarFavorito(id) {
     guardarFavoritos(leerFavoritos().filter((item) => item.id !== numero));
 }
 
-// ---------- orden (la prioridad visual = orden del array) ----------
-
-/** direccion: -1 sube, +1 baja */
+// direccion: -1 sube, +1 baja (el orden de la lista es la prioridad).
 export function moverFavorito(id, direccion) {
     const lista = leerFavoritos();
     const numero = Number(id);
@@ -78,8 +67,6 @@ export function moverFavorito(id, direccion) {
     lista[hacia] = temp;
     guardarFavoritos(lista);
 }
-
-// ---------- editar etiqueta / nota ----------
 
 export function actualizarFavorito(id, { etiqueta, nota }) {
     const etiquetaLimpia = String(etiqueta ?? "").trim();

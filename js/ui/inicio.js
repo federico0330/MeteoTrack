@@ -1,13 +1,9 @@
-/**
- * inicio.js — home: GPS + aviso nocturno del briefing.
- */
+// Inicio: GPS y aviso si ya es de noche (misma hora que el briefing).
 import { obtenerPosicionActual } from "../infrastructure/geolocationApi.js";
 
-// ---------- referencias DOM ----------
 const botonUbicacion = document.querySelector("#boton-ubicacion");
 const cajaError = document.querySelector("#error-ubicacion");
 
-// ---------- GPS ----------
 botonUbicacion.addEventListener("click", function () {
     void usarUbicacion();
 });
@@ -19,7 +15,6 @@ async function usarUbicacion() {
 
     try {
         const posicion = await obtenerPosicionActual();
-        // MPA: salto a otra página con lat/lon en la query.
         window.location.href =
             "detalle.html?lat=" +
             encodeURIComponent(posicion.latitud) +
@@ -33,7 +28,6 @@ async function usarUbicacion() {
     }
 }
 
-// ---------- aviso de noche (misma regla ≥ 20 h que el briefing) ----------
 mostrarAvisoNocturnoSiCorresponde();
 
 function mostrarAvisoNocturnoSiCorresponde() {

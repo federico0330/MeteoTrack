@@ -1,7 +1,4 @@
-/**
- * gestionarHistorial — visitas al detalle con id.
- * Lo más reciente va primero (unshift). Tope para no hinchar localStorage.
- */
+// Historial de visitas al detalle con id. Lo más nuevo primero, tope 30.
 import { leerHistorial, guardarHistorial } from "../infrastructure/historialStorage.js";
 
 const MAX_ITEMS = 30;
@@ -11,7 +8,6 @@ export function listarHistorial() {
 }
 
 export function registrarVisita(localidad) {
-    // GPS u otro caso sin id: no historial (no tengo link estable ?id=).
     if (!localidad || localidad.id == null) {
         return;
     }
@@ -26,7 +22,6 @@ export function registrarVisita(localidad) {
 
     const listaAnterior = leerHistorial();
 
-    // Saco duplicados de la misma ciudad y la pongo al frente.
     const listaSinEstaCiudad = listaAnterior.filter(function (item) {
         return item.id !== entrada.id;
     });

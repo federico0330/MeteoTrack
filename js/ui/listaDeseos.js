@@ -1,7 +1,4 @@
-/**
- * listaDeseos.js — favoritos: fila compacta + panel Editar colapsado.
- * Sin fetch de clima por ítem: solo localStorage + link al detalle.
- */
+// Favoritos: lista local, orden con flechas, editar etiqueta/nota.
 import {
     listarFavoritos,
     borrarFavorito,
@@ -33,12 +30,10 @@ function pintar() {
     caja.appendChild(lista);
 }
 
-// Toda la card junta: orden + link + editar + panel.
 function crearCardFavorito(fav, indice, total) {
     const card = document.createElement("article");
     card.className = "card favorito-card";
 
-    // --- fila compacta ---
     const fila = document.createElement("div");
     fila.className = "favorito-fila";
 
@@ -95,7 +90,6 @@ function crearCardFavorito(fav, indice, total) {
     fila.append(orden, linkDetalle, botonEditar);
     card.appendChild(fila);
 
-    // --- panel colapsado ---
     const panel = document.createElement("div");
     panel.className = "favorito-panel";
     panel.hidden = true;

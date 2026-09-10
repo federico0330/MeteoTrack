@@ -1,11 +1,4 @@
-/**
- * detalle.js — pantalla principal del clima.
- * Orden de lectura que armé:
- *   1) imports
- *   2) helpers de formato / slice 24 h  (juntos, los uso al pintar)
- *   3) arranque: leer URL → cargar datos
- *   4) pintar: cabecera → mapa/ahora → briefing → 24 h → 7 días
- */
+// Detalle: lee id o lat/lon de la URL y pinta el pronóstico.
 import {
     obtenerDetalle,
     obtenerDetallePorCoordenadas,
@@ -21,8 +14,6 @@ import {
 } from "../application/gestionarFavoritos.js";
 import { registrarVisita } from "../application/gestionarHistorial.js";
 import { avisarLocal } from "../infrastructure/notificaciones.js";
-
-// ---------- helpers (los dejé arriba para no saltar al final del archivo) ----------
 
 function proximas24Horas(pronostico) {
     const ahora = pronostico.actual.tiempo;
@@ -41,15 +32,13 @@ function formatearHora(iso) {
 }
 
 function formatearFecha(isoFecha) {
-    // Mediodía fijo para no pelearme con husos al mostrar solo la fecha.
+    // T12:00 para no correr el día por el huso al mostrar solo la fecha.
     return new Date(`${isoFecha}T12:00:00`).toLocaleDateString("es-AR", {
         weekday: "short",
         day: "numeric",
         month: "short",
     });
 }
-
-// ---------- arranque ----------
 
 const caja = document.querySelector("#detalle-contenido");
 const params = new URLSearchParams(window.location.search);
@@ -74,7 +63,6 @@ async function cargar() {
         const localidad = detalle.localidad;
         const pronostico = detalle.pronostico;
 
-        // Solo con id: GPS no deja rastro en historial.
         registrarVisita(localidad);
         pintar(localidad, pronostico);
     } catch (error) {
@@ -86,15 +74,12 @@ async function cargar() {
     }
 }
 
-// ---------- pintar (bloques en el orden visual de la página) ----------
-
 function pintar(localidad, pronostico) {
     caja.innerHTML = "";
 
     const mensajeFav = document.createElement("p");
     mensajeFav.className = "favorito-feedback";
 
-    // === 1) Cabecera: título + favorito (o aviso GPS) ===
     const cabecera = document.createElement("div");
     cabecera.className = "detalle-cabecera";
 
@@ -102,7 +87,6 @@ function pintar(localidad, pronostico) {
     titulo.textContent = localidad.nombre;
 
     if (localidad.id == null) {
-        // No uso un botón deshabilitado amarillo: parece acción y no lo es.
         const avisoGps = document.createElement("p");
         avisoGps.className = "aviso-favorito-gps";
         avisoGps.textContent =
@@ -157,7 +141,6 @@ function pintar(localidad, pronostico) {
         ? `${localidad.provincia}, ${localidad.pais}`
         : localidad.pais;
 
-    // === 2) Mapa + clima actual (en desktop van lado a lado por CSS) ===
     const principal = document.createElement("section");
     principal.className = "detalle-principal";
 
@@ -184,7 +167,6 @@ function pintar(localidad, pronostico) {
     ahora.append(h2Ahora, temp, desc, extras);
     principal.append(mapa, ahora);
 
-    // === 3) Briefing de mañana ===
     const briefingDatos = armarBriefingManana(pronostico);
     let seccionBriefing = null;
 
@@ -200,13 +182,12 @@ function pintar(localidad, pronostico) {
         pBriefing.textContent = briefingDatos.frase;
         seccionBriefing.append(h2Briefing, pBriefing);
 
-        // Solo si ya hay permiso; pedir al cargar lo niega Chrome en silencio.
+        // Si ya dio permiso, aviso; pedirlo al cargar Chrome a veces lo niega solo.
         if (Notification.permission === "granted") {
             void avisarLocal("Briefing de mañana", briefingDatos.frase);
         }
     }
 
-    // === 4) Próximas 24 horas (gráfico + cards) ===
     const proximas = proximas24Horas(pronostico);
     const seccionHoras = document.createElement("section");
     const h2Horas = document.createElement("h2");
@@ -229,7 +210,6 @@ function pintar(localidad, pronostico) {
     }
     seccionHoras.append(h2Horas, grafico, listaHoras);
 
-    // === 5) Próximos 7 días ===
     const seccionDias = document.createElement("section");
     const h2Dias = document.createElement("h2");
     h2Dias.textContent = "Próximos 7 días";
@@ -250,7 +230,6 @@ function pintar(localidad, pronostico) {
     }
     seccionDias.append(h2Dias, listaDias);
 
-    // === montaje final (mismo orden que se lee en pantalla) ===
     const piezas = [cabecera, mensajeFav, meta, principal];
     if (seccionBriefing) {
         piezas.push(seccionBriefing);

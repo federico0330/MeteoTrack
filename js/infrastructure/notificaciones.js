@@ -1,7 +1,4 @@
-/**
- * notificaciones.js — Notification local del navegador (no push en segundo plano).
- * Si el browser no soporta, si niegan permiso o si algo raro pasa: no rompo la app.
- */
+// Notification local. Si no hay permiso o falla, la app sigue.
 
 export async function avisarLocal(titulo, cuerpo) {
     if (!("Notification" in window)) {
@@ -11,8 +8,8 @@ export async function avisarLocal(titulo, cuerpo) {
     try {
         let permiso = Notification.permission;
 
-        // "default" = todavía no pregunté. Ojo: sin gesto de usuario Chrome
-        // a veces niega en silencio; por eso en detalle pido permiso al agregar favorito.
+        // default = todavía no preguntó. En detalle se pide al guardar un favorito
+        // (si se pide al cargar, Chrome a veces lo niega solo).
         if (permiso === "default") {
             permiso = await Notification.requestPermission();
         }
@@ -23,6 +20,6 @@ export async function avisarLocal(titulo, cuerpo) {
 
         new Notification(titulo, { body: cuerpo });
     } catch {
-        // La app de clima tiene que seguir igual aunque falle el aviso.
+        // Si el aviso falla, no corto el resto de la app.
     }
 }

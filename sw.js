@@ -1,9 +1,5 @@
-/**
- * sw.js — Service Worker.
- * Decidí Cache First para el shell (HTML/CSS/JS/íconos) y Network Only
- * para Open-Meteo: sin clima “mentiroso” offline.
- * Si cambio mucho el shell y no se refresca, subo CACHE_NOMBRE (v4, v5…).
- */
+// Cache First para HTML/CSS/JS/íconos. Open-Meteo va siempre por red.
+// Si el shell no se actualiza, subir CACHE_NOMBRE (v5, v6…).
 const CACHE_NOMBRE = "meteotrack-shell-v4";
 
 const ARCHIVOS_SHELL = [
@@ -42,7 +38,6 @@ const ARCHIVOS_SHELL = [
     "./js/pwa-init.js",
 ];
 
-// --- install: precacheo el shell ---
 self.addEventListener("install", function (evento) {
     evento.waitUntil(
         caches.open(CACHE_NOMBRE).then(function (cache) {
@@ -51,7 +46,6 @@ self.addEventListener("install", function (evento) {
     );
 });
 
-// --- activate: borro cajas viejas si cambié el nombre ---
 self.addEventListener("activate", function (evento) {
     evento.waitUntil(
         caches.keys().then(function (nombres) {
@@ -66,12 +60,10 @@ self.addEventListener("activate", function (evento) {
     );
 });
 
-// --- fetch: reglas por tipo de pedido ---
 self.addEventListener("fetch", function (evento) {
     const pedido = evento.request;
     const url = new URL(pedido.url);
 
-    // Open-Meteo → no intercepto (Network Only).
     if (
         url.hostname === "api.open-meteo.com" ||
         url.hostname === "geocoding-api.open-meteo.com"
@@ -83,12 +75,10 @@ self.addEventListener("fetch", function (evento) {
         return;
     }
 
-    // Solo mi origen (evito chrome-extension:// rompiendo cache.put).
     if (url.origin !== self.location.origin) {
         return;
     }
 
-    // Shell → Cache First.
     evento.respondWith(
         caches.match(pedido).then(function (respuestaCache) {
             if (respuestaCache) {

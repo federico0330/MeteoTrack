@@ -1,7 +1,4 @@
-/**
- * armarBriefManana — armo la frase del briefing con diario[1] (mañana).
- * Sin DOM ni fetch: solo datos + hora del celular.
- */
+// Frase del briefing con el día de mañana (diario[1]).
 import { textoClima } from "../domain/codigosWmo.js";
 
 export function armarBriefingManana(pronostico, ahora = new Date()) {
@@ -20,7 +17,6 @@ export function armarBriefingManana(pronostico, ahora = new Date()) {
 
     const frase = `Mañana: ${descripcion}, máx ${max}° / mín ${min}°`;
 
-    // Consigna: “de noche” a partir de las 20:00 hora local.
     const esDeNoche = ahora.getHours() >= 20;
 
     return { frase, esDeNoche };
