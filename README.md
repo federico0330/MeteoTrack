@@ -1,8 +1,5 @@
 # MeteoTrack
-
 Trabajo integrador Web + PWA. App de clima: buscar una localidad, ver el pronóstico, guardarla en favoritos y volver desde el historial.
-
-Repo: https://github.com/federico0330/MeteoTrack
 
 ## Cómo levantarlo en local
 
@@ -14,16 +11,13 @@ Con Python:
 cd MeteoTrack
 python3 -m http.server 8765
 ```
-
 Después abrir `http://127.0.0.1:8765/`.
 
-También sirve Live Server en VS Code: clic derecho en `index.html` → Open with Live Server. Si cambiás JS o CSS, recargar fuerte (`Ctrl+Shift+R`).
-
-No hay `npm install` ni variables de entorno. Open-Meteo no pide API key.
+También sirve Live Server en VS Code: clic derecho en `index.html` → Open with Live Server.
 
 ## Enfoque
 
-No usé framework ni bundler. El trabajo pide fetch, DOM, localStorage, geolocalización, un mapa y un Service Worker; con vanilla y módulos ES se ve todo eso.
+No usé framework. El trabajo pide trabajar con fetch, DOM, localStorage, geolocalización, un mapa y un Service Worker; con js vanilla y módulos ES pude implementar cada uno de esos requerimientos que pedía el TP.
 
 Cada vista es un HTML (`index.html`, `busqueda.html`, `detalle.html`, `lista-deseos.html`, `historial.html`, `contacto.html`). El CSS está en `css/styles.css`. El JS está separado por capa:
 
